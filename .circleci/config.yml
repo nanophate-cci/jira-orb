@@ -287,7 +287,7 @@ orbs:
 parameters:
   jira_keys:
     default: ""
-    description: The key for jira that needs to be set.
+    description: The key for jira that needs to be set
     type: string
 
 jobs:
