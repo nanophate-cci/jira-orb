@@ -34,6 +34,10 @@ orbs:
                     default: ""
                     description: Specify the JSD service ID for the project this notification targets.
                     type: string
+                state_path:
+                    default: ./circleci-orb-jira.status
+                    description: Relative or absolute path to a store build state for orb.
+                    type: string
                 token_name:
                     default: CIRCLE_TOKEN
                     description: The name of environment variable containing CircleCI API Token. Required for all projects.
@@ -43,12 +47,12 @@ orbs:
                     when: always
                 - run:
                     command: |
-                        echo 'JIRA_BUILD_STATUS="failed"' > ./circleci-orb-jira.status
+                        echo 'JIRA_BUILD_STATUS="failed"' > <<parameters.state_path>>
                     name: JIRA - Setting Failure Condition
                     when: on_fail
                 - run:
                     command: |
-                        echo 'JIRA_BUILD_STATUS="successful"' > ./circleci-orb-jira.status
+                        echo 'JIRA_BUILD_STATUS="successful"' > <<parameters.state_path>>
                     name: JIRA - Setting Success Condition
                     when: on_success
                 - run:
@@ -98,8 +102,7 @@ orbs:
                         }
 
                         parse_jira_key_array () {
-                          ISSUE_KEYS="<< parameters.jira_keys >>"
-                          if [ -z "$ISSUE_KEYS" ]; then
+                          if [ -z "<< parameters.jira_keys >>" ]; then
                             # No issue keys found.
                             echo "No issue keys found. This build does not contain a match for a Jira Issue. Please add your issue ID to the commit message or within the branch name."
                             exit 0
@@ -142,6 +145,7 @@ orbs:
                           --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
                           --arg display "${CIRCLE_PROJECT_REPONAME}"  \
                           --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}" \
+                          --argjson issueKeys "['<< parameters.jira_keys >>']" \
                           '
                           ($time_str | tonumber) as $time_num |
                           {
@@ -156,7 +160,7 @@ orbs:
                                 "url": $workflowUrl,
                                 "state": $state,
                                 "lastUpdated": $lastUpdated,
-                                "issueKeys": ["<< parameters.jira_keys >>"]
+                                "issueKeys": $issueKeys
                               }
                             ]
                           }
@@ -187,6 +191,7 @@ orbs:
                           --arg envId "${CIRCLE_WORKFLOW_ID}-<<parameters.environment>>" \
                           --arg envName "<<parameters.environment>>" \
                           --arg envType "<<parameters.environment_type>>" \
+                          --argjson issueKeys "['<< parameters.jira_keys >>']" \
                           '
                           ($time_str | tonumber) as $time_num |
                           {
@@ -208,7 +213,7 @@ orbs:
                                 "associations": [
                                   {
                                     "associationType": "issueKeys",
-                                    "values": ["<< parameters.jira_keys >>"]
+                                    "values": $issueKeys
                                   },
                                   {
                                     "associationType": "serviceIdOrKeys",
@@ -266,20 +271,125 @@ orbs:
 
                           # If reached this point, the deployment was a success.
                           echo
-                          jq '.`' /tmp/curl_response.txt
+                          jq '.' /tmp/curl_response.txt
                           echo
                           echo
                           echo "Success!"
                         }
 
                         # kick off
-                        source ./circleci-orb-jira.status
+                        source <<parameters.state_path>>
                         run
-                        rm -f ./circleci-orb-jira.status
+                        rm -f <<parameters.state_path>>
                     name: Update status in Atlassian Jira
                     when: always
+    description: |
+        This Orb reports the status of builds and deployments in CircleCI Projects to your Jira Cloud instance.
+        Requires that [CircleCI for Jira](https://marketplace.atlassian.com/apps/1215946) be installed in the Jira *Cloud* instance.
+        Please see [CircleCI Jira integration docs](https://circleci.com/docs/2.0/jira-plugin/)
+    display:
+        home_url: https://circleci.com/docs/2.0/jira-plugin/
+        source_url: https://github.com/CircleCI-Public/jira-connect-orb
+    examples:
+        basic_build:
+            description: Notify jira on single job
+            usage:
+                jobs:
+                    build:
+                        docker:
+                            - image: circleci/node:10
+                        steps:
+                            - run: echo "hello"
+                orbs:
+                    jira: circleci/jira@x.y.z
+                version: 2.1
+                workflows:
+                    build:
+                        jobs:
+                            - build:
+                                post-steps:
+                                    - jira/notify
+        full_workflow:
+            description: Includes multiple build jobs and deployment jobs.
+            usage:
+                jobs:
+                    component-A:
+                        docker:
+                            - image: circleci/node:10
+                        steps:
+                            - checkout
+                            - run: exit 0
+                            - jira/notify
+                        working_directory: ~/repo
+                    component-B:
+                        docker:
+                            - image: circleci/node:10
+                        steps:
+                            - checkout
+                            - run: sleep 2
+                            - jira/notify
+                        working_directory: ~/repo
+                    deploy:
+                        docker:
+                            - image: circleci/node:10
+                        steps:
+                            - checkout
+                            - run: echo "hi Jira"
+                        working_directory: ~/repo
+                    integration:
+                        docker:
+                            - image: circleci/node:10
+                        steps:
+                            - checkout
+                            - run: echo "hi Jira"
+                            - jira/notify
+                        working_directory: ~/repo
+                orbs:
+                    jira: circleci/jira@x.y.z
+                version: 2.1
+                workflows:
+                    build-deploy:
+                        jobs:
+                            - component-A
+                            - component-B
+                            - integration:
+                                requires:
+                                    - component-A
+                                    - component-B
+                            - deploy:
+                                name: Dev East
+                                post-steps:
+                                    - jira/notify:
+                                        environment_type: development
+                                        job_type: deployment
+                                requires:
+                                    - integration
+                            - deploy:
+                                name: Test East
+                                post-steps:
+                                    - jira/notify:
+                                        environment_type: testing
+                                        job_type: deployment
+                                requires:
+                                    - Dev East
+                            - hold:
+                                name: Verify
+                                requires:
+                                    - Test East
+                                type: approval
+                            - deploy:
+                                name: Prod East
+                                post-steps:
+                                    - jira/notify:
+                                        environment_type: production
+                                        job_type: deployment
+                                requires:
+                                    - Verify
     orbs:
         jq: circleci/jq@2.2
+    version: 2.1
+
+
 
 
 parameters:
