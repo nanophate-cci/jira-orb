@@ -302,6 +302,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - jira/notify:
+          job_type: deployment
           jira_keys: << pipeline.parameters.jira_keys >>
 
 workflows:
