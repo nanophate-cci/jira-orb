@@ -4,7 +4,7 @@ commands:
   notify:
     parameters:
       override_keys:
-          default: ''
+          default: ""
           description: The key for jira that needs to be set.
           type: string
       environment:
@@ -28,6 +28,10 @@ commands:
               - build
               - deployment
           type: enum
+      service_id:
+          default: ""
+          description: Specify the JSD service ID for the project this notification targets.
+          type: string
       token_name:
           default: CIRCLE_TOKEN
           description: The name of environment variable containing CircleCI API Token. Required for all projects.
@@ -57,7 +61,8 @@ commands:
               run () {
                 verify_api_key
                 set_jira_key_array
-                if [[ -n "${ISSUE_KEYS}" ]]; then
+                HAS_JSD_SERVICE_ID="<< parameters.service_id >>"
+                if [[ -n "${ISSUE_KEYS}" || -n "${HAS_JSD_SERVICE_ID}" ]]; then
                   check_workflow_status
                   generate_json_payload_<<parameters.job_type>>
                   post_to_jira
