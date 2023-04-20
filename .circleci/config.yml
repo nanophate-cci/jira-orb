@@ -141,8 +141,7 @@ orbs:
                           --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
                           --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
                           --arg display "${CIRCLE_PROJECT_REPONAME}"  \
-                          --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}" \
-                          --argjson issueKeys "<< parameters.jira_keys >>" \
+                          --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}"
                           '
                           ($time_str | tonumber) as $time_num |
                           {
@@ -157,7 +156,7 @@ orbs:
                                 "url": $workflowUrl,
                                 "state": $state,
                                 "lastUpdated": $lastUpdated,
-                                "issueKeys": $issueKeys
+                                "issueKeys": ["<< parameters.jira_keys >>"]
                               }
                             ]
                           }
@@ -187,8 +186,7 @@ orbs:
                           --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_JOB} <<parameters.environment>>" \
                           --arg envId "${CIRCLE_WORKFLOW_ID}-<<parameters.environment>>" \
                           --arg envName "<<parameters.environment>>" \
-                          --arg envType "<<parameters.environment_type>>" \
-                          --argjson issueKeys "<< parameters.jira_keys >>" \
+                          --arg envType "<<parameters.environment_type>>"
                           '
                           ($time_str | tonumber) as $time_num |
                           {
@@ -210,7 +208,7 @@ orbs:
                                 "associations": [
                                   {
                                     "associationType": "issueKeys",
-                                    "values": $issueKeys
+                                    "values": ["<< parameters.jira_keys >>"]
                                   },
                                   {
                                     "associationType": "serviceIdOrKeys",
