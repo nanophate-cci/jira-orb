@@ -302,6 +302,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - cci-jira/notify
+      - run: cat /tmp/jira-status.json
 
 workflows:
   my-workflow:
