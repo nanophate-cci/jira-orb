@@ -292,7 +292,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - notify:
-          override_keys: << parameters.jira_keys >>
+          override_keys: << pipeline.parameters.jira_keys >>
 
 workflows:
   my-workflow:
