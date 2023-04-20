@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  jq: circleci/jq@2.2
+
 commands:
   notify:
     parameters:
