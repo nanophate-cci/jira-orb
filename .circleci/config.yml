@@ -286,8 +286,7 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
-      - notify:
-          override_keys: 'EXP-123'
+      - notify
 
 workflows:
   my-workflow:
