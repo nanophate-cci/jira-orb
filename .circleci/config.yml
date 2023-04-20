@@ -3,34 +3,34 @@ version: 2.1
 commands:
   notify:
     parameters:
-        override_keys:
-            default: ''
-            description: The key for jira that needs to be set.
-            type: string
-        environment:
-            default: ${CIRCLE_JOB}
-            description: For deployments. Indicates the name of target environment. Default is the CircleCI Job Name.
-            type: string
-        environment_type:
-            default: development
-            description: Indicates the category of target environment as defined by Atlassian
-            enum:
-                - production
-                - staging
-                - testing
-                - development
-                - unmapped
-            type: enum
-        job_type:
-            default: build
-            description: Indicates if job should be treated as build or deployment in Jira dev panel. Note that Deployments require additional details
-            enum:
-                - build
-                - deployment
-        token_name:
-            default: CIRCLE_TOKEN
-            description: The name of environment variable containing CircleCI API Token. Required for all projects.
-            type: string
+      override_keys:
+          default: ''
+          description: The key for jira that needs to be set.
+          type: string
+      environment:
+          default: ${CIRCLE_JOB}
+          description: For deployments. Indicates the name of target environment. Default is the CircleCI Job Name.
+          type: string
+      environment_type:
+          default: development
+          description: Indicates the category of target environment as defined by Atlassian
+          enum:
+              - production
+              - staging
+              - testing
+              - development
+              - unmapped
+          type: enum
+      job_type:
+          default: build
+          description: Indicates if job should be treated as build or deployment in Jira dev panel. Note that Deployments require additional details
+          enum:
+              - build
+              - deployment
+      token_name:
+          default: CIRCLE_TOKEN
+          description: The name of environment variable containing CircleCI API Token. Required for all projects.
+          type: string
     steps:
       - jq/install:
           when: always
