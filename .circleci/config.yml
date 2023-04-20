@@ -283,11 +283,6 @@ commands:
 
 jobs:
   my-job:
-    parameters:
-      jira_keys:
-          default: ""
-          description: The key for jira that needs to be set.
-          type: string
     docker:
       - image: cimg/base:stable
     steps:
