@@ -69,7 +69,7 @@ orbs:
                           parse_jira_key_array
                           HAS_JSD_SERVICE_ID="<< parameters.service_id >>"
                             # If you have either an issue key or a service ID
-                          if [[ -n "${ISSUE_KEYS}" || -n "${HAS_JSD_SERVICE_ID}" ]]; then
+                          if [[ -n "<< parameters.jira_keys >>" || -n "${HAS_JSD_SERVICE_ID}" ]]; then
                             check_workflow_status
                             generate_json_payload_<<parameters.job_type>>
                             post_to_jira
