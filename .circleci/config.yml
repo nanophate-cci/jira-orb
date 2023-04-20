@@ -283,10 +283,16 @@ commands:
 
 jobs:
   my-job:
+    parameters:
+      jira_keys:
+          default: ""
+          description: The key for jira that needs to be set.
+          type: string
     docker:
       - image: cimg/base:stable
     steps:
-      - notify
+      - notify:
+          override_keys: << parameters.jira_keys >>
 
 workflows:
   my-workflow:
