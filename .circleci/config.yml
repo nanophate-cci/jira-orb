@@ -27,6 +27,7 @@ commands:
           enum:
               - build
               - deployment
+          type: enum
       token_name:
           default: CIRCLE_TOKEN
           description: The name of environment variable containing CircleCI API Token. Required for all projects.
