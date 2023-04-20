@@ -191,7 +191,7 @@ orbs:
                           --arg envId "${CIRCLE_WORKFLOW_ID}-<<parameters.environment>>" \
                           --arg envName "<<parameters.environment>>" \
                           --arg envType "<<parameters.environment_type>>" \
-                          --argjson serviceIdOrKeys '["<< parameters.service_id >>"]' \
+                          --argjson serviceIdOrKeys "${HAS_JSD_SERVICE_ID}" \
                           --argjson issueKeys '["<< parameters.jira_keys >>"]' \
                           '
                           ($time_str | tonumber) as $time_num |
