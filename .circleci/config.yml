@@ -303,6 +303,7 @@ jobs:
     steps:
       - cci-jira/notify
       - run: cat /tmp/jira-status.json
+      - run: echo $ISSUE_KEYS
 
 workflows:
   my-workflow:
