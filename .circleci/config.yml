@@ -3,6 +3,12 @@ version: 2.1
 orbs:
   jq: circleci/jq@2.2
 
+parameters:
+  jira_keys:
+    default: ""
+    description: The key for jira that needs to be set.
+    type: string
+
 commands:
   notify:
     parameters:
