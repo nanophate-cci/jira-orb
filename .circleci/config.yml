@@ -98,7 +98,7 @@ orbs:
                         }
 
                         parse_jira_key_array () {
-                          ISSUE_KEYS="<<parameters.jira_keys>>"
+                          ISSUE_KEYS="<< parameters.jira_keys >>"
                           if [ -z "$ISSUE_KEYS" ]; then
                             # No issue keys found.
                             echo "No issue keys found. This build does not contain a match for a Jira Issue. Please add your issue ID to the commit message or within the branch name."
@@ -142,7 +142,7 @@ orbs:
                           --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
                           --arg display "${CIRCLE_PROJECT_REPONAME}"  \
                           --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}" \
-                          --argjson issueKeys "${ISSUE_KEYS}" \
+                          --argjson issueKeys "<< parameters.jira_keys >>" \
                           '
                           ($time_str | tonumber) as $time_num |
                           {
@@ -188,7 +188,7 @@ orbs:
                           --arg envId "${CIRCLE_WORKFLOW_ID}-<<parameters.environment>>" \
                           --arg envName "<<parameters.environment>>" \
                           --arg envType "<<parameters.environment_type>>" \
-                          --argjson issueKeys "${ISSUE_KEYS}" \
+                          --argjson issueKeys "<< parameters.jira_keys >>" \
                           '
                           ($time_str | tonumber) as $time_num |
                           {
