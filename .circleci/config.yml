@@ -3,6 +3,10 @@ version: 2.1
 commands:
   notify:
     parameters:
+        override_keys:
+            default: ''
+            description: The key for jira that needs to be set.
+            type: string
         environment:
             default: ${CIRCLE_JOB}
             description: For deployments. Indicates the name of target environment. Default is the CircleCI Job Name.
@@ -273,11 +277,11 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
-      - notify
+      - notify:
+          override_keys: 'EXP-123'
 
 workflows:
-  workflow1:
+  my-workflow:
     jobs:
       - my-job
-              version: ["14.1.0", "14.0.0"]
  
