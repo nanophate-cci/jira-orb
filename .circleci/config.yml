@@ -191,6 +191,7 @@ orbs:
                           --arg envId "${CIRCLE_WORKFLOW_ID}-<<parameters.environment>>" \
                           --arg envName "<<parameters.environment>>" \
                           --arg envType "<<parameters.environment_type>>" \
+                          --argjson serviceIdOrKeys "${HAS_JSD_SERVICE_ID}" \
                           --argjson issueKeys '["<< parameters.jira_keys >>"]' \
                           '
                           ($time_str | tonumber) as $time_num |
@@ -217,7 +218,7 @@ orbs:
                                   },
                                   {
                                     "associationType": "serviceIdOrKeys",
-                                    "values": ["<< parameters.service_id >>"]
+                                    "values": $serviceIdOrKeys
                                   }
                                 ],
                                 "environment":{
@@ -302,6 +303,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - jira/notify:
+          job_type: deployment
           jira_keys: << pipeline.parameters.jira_keys >>
 
 workflows:
