@@ -13,8 +13,6 @@ jobs:
 
 workflows:
   my-workflow:
-    when:
-      equal: [api, << pipeline.trigger_source >>]
     jobs:
       - my-job
  
