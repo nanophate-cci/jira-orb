@@ -7,6 +7,7 @@ jobs:
   my-job:
     docker:
       - image: cimg/base:stable
+    shell: /bin/bash -euxo pipefail
     steps:
       - jira/notify:
           job_type: deployment
